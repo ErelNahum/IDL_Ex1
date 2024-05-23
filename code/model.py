@@ -1,8 +1,10 @@
 import torch.nn as nn
+
+
 class NeuralNetwork_2b(nn.Module):
     def __init__(self):
         super().__init__()
-        self.flatten = nn.Flatten()
+        self.flatten = nn.Flatten(start_dim=0, end_dim=1)
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(180, 180),
             nn.ReLU(),
@@ -11,16 +13,17 @@ class NeuralNetwork_2b(nn.Module):
             nn.Linear(180, 1),
             nn.Sigmoid()
         )
-    
+
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
 
+
 class NeuralNetwork_2c(nn.Module):
     def __init__(self):
         super().__init__()
-        self.flatten = nn.Flatten()
+        self.flatten = nn.Flatten(start_dim=0, end_dim=1)
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(180, 10),
             nn.ReLU(),
@@ -29,11 +32,12 @@ class NeuralNetwork_2c(nn.Module):
             nn.Linear(4, 1),
             nn.Sigmoid()
         )
-    
+
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
+
 
 class NeuralNetwork_2d(nn.Module):
     def __init__(self):
@@ -45,7 +49,7 @@ class NeuralNetwork_2d(nn.Module):
             nn.Linear(4, 1),
             nn.Sigmoid()
         )
-    
+
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
