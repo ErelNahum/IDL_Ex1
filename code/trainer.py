@@ -1,6 +1,6 @@
 import torch
 from dataset import PeptidesDataset
-from model import NeuralNetwork
+from model import NeuralNetwork_2b, NeuralNetwork_2c, NeuralNetwork_2d
 from torch.utils.data import DataLoader, random_split
 from torch.nn import Module
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ device = torch.device('cuda:0' if use_cuda else 'cpu')
 torch.backends.cudnn.benchmark = True
 
 BATCH_SIZE = 30
-NUMBER_OF_EPOCHS = 20
+NUMBER_OF_EPOCHS = 100
 DEBUG = True
 
 
@@ -79,6 +79,20 @@ def plot_train_test_loss(train_losses: List,
     if path:
         plt.savefig(path)
 
+def plot_train_test_accuracy(train_accuracies: List,
+                         test_accuracies: List,
+                         path: str = None):
+    plt.plot(test_accuracies, 'r', label='test')
+    plt.plot(train_accuracies, 'b', label='train')
+    plt.xlabel('Epochs (#)')
+    plt.ylabel('ACCURACY')
+    plt.legend(loc="lower right")
+    plt.title('Test/Train Accuracy Over Epochs')
+    
+    plt.show()
+    if path:
+        plt.savefig(path)
+
     
 
 def main():
@@ -98,12 +112,15 @@ def main():
     test_dataloader = DataLoader(test_dataset, BATCH_SIZE, shuffle=True)
 
     #
-    model = NeuralNetwork()
+    model = NeuralNetwork_2d()
     loss_fn = torch.nn.BCELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 
     train_losses = []
     test_losses = []
+    train_accuracies = []
+    test_accuracies = []
+
     epochs = range(NUMBER_OF_EPOCHS)
     for epoch_index in epochs:
         train_loss, train_accuracy, test_loss, test_accuracy = epoch(
@@ -111,6 +128,8 @@ def main():
             )
         train_losses.append(train_loss)
         test_losses.append(test_loss)
+        train_accuracies.append(train_accuracy)
+        test_accuracies.append(test_accuracy)
 
         if DEBUG:
             print('-------------------')
@@ -118,9 +137,10 @@ def main():
             print('\tTrain\tTest')
             print(f'Loss\t{train_loss}\t{test_loss}')
             print(f'Accuracy\t{train_accuracy}\t{test_accuracy}')
-            print('-------------------')
 
     plot_train_test_loss(train_losses, test_losses)
+    plot_train_test_accuracy(train_accuracies, test_accuracies)
+    torch.save(model.state_dict(), '../models/2d_model.pth')
 
 if __name__ == '__main__':
     main()
